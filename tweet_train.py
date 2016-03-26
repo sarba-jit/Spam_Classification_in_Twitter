@@ -108,47 +108,47 @@ total_file_tweets['word_count_without_link'] = total_file_tweets.Tweet.apply(wor
 total_file_tweets['word_stripped'] = total_file_tweets['word_without_link'].map(lambda text: ' '.join(text))
 total_file_tweets['shortened_link'] = total_file_tweets.Tweet.apply(shortened_link_count)
 
-# ##################################################################
-# ###Now we'll convert each message, represented as a list of tokens (lemmas) above, into a vector that machine learning models can understand.
-# # Doing that requires essentially three steps, in the bag-of-words model:
-# # counting how many times does a word occur in each message (term frequency)
-# # weighting the counts, so that frequent tokens get lower weight (inverse document frequency)
-# # normalizing the vectors to unit length, to abstract from the original text length (L2 norm)
-# # Here we used scikit-learn (sklearn), a powerful Python library for teaching machine learning.
-# # It contains a multitude of various methods and options.
-#
-# bow_transformer = CountVectorizer(analyzer=split_into_lemmas).fit(total_file_tweets['word_stripped'])
-#
-# # The bag-of-words counts for the entire TWEETS corpus are a large, sparse matrix:
-#
-# tweets_bow = bow_transformer.transform(total_file_tweets['word_stripped'])
-# print 'sparse matrix shape:', tweets_bow.shape
-# print 'number of non-zeros:', tweets_bow.nnz
-# print 'sparsity: %.2f%%' % (100.0 * tweets_bow.nnz / (tweets_bow.shape[0] * tweets_bow.shape[1]))
-#
-#
-# # And finally, after the counting, the term weighting and normalization can be done with TF-IDF, using scikit-learn's TfidfTransformer:
-#
-# tfidf_transformer = TfidfTransformer().fit(tweets_bow)
-#
-#
-# #To transform the entire bag-of-words corpus into TF-IDF corpus at once:
-#
-# messages_tfidf = tfidf_transformer.transform(tweets_bow)
-# print messages_tfidf.shape
-#
-# ###################################################################################################
-# ###############################  TRAINING THE MODEL  #############################################
-# # With messages represented as vectors, we can finally train our spam/ham classifier.
-# # This part is pretty straightforward, and there are many libraries that realize the training algorithms.
-#
-# spam_detector = MultinomialNB().fit(messages_tfidf, total_file_tweets['class'])
-# all_predictions = spam_detector.predict(messages_tfidf)
-# print all_predictions
-#
-# print 'accuracy', accuracy_score(total_file_tweets['class'], all_predictions)
-# print 'confusion matrix\n', confusion_matrix(total_file_tweets['class'], all_predictions)
-# print '(row=expected, col=predicted)'
+##################################################################
+###Now we'll convert each message, represented as a list of tokens (lemmas) above, into a vector that machine learning models can understand.
+# Doing that requires essentially three steps, in the bag-of-words model:
+# counting how many times does a word occur in each message (term frequency)
+# weighting the counts, so that frequent tokens get lower weight (inverse document frequency)
+# normalizing the vectors to unit length, to abstract from the original text length (L2 norm)
+# Here we used scikit-learn (sklearn), a powerful Python library for teaching machine learning.
+# It contains a multitude of various methods and options.
+
+bow_transformer = CountVectorizer(analyzer=split_into_lemmas).fit(total_file_tweets['word_stripped'])
+
+# The bag-of-words counts for the entire TWEETS corpus are a large, sparse matrix:
+
+tweets_bow = bow_transformer.transform(total_file_tweets['word_stripped'])
+print 'sparse matrix shape:', tweets_bow.shape
+print 'number of non-zeros:', tweets_bow.nnz
+print 'sparsity: %.2f%%' % (100.0 * tweets_bow.nnz / (tweets_bow.shape[0] * tweets_bow.shape[1]))
+
+
+# And finally, after the counting, the term weighting and normalization can be done with TF-IDF, using scikit-learn's TfidfTransformer:
+
+tfidf_transformer = TfidfTransformer().fit(tweets_bow)
+
+
+#To transform the entire bag-of-words corpus into TF-IDF corpus at once:
+
+messages_tfidf = tfidf_transformer.transform(tweets_bow)
+print messages_tfidf.shape
+
+###################################################################################################
+###############################  TRAINING THE MODEL  #############################################
+# With messages represented as vectors, we can finally train our spam/ham classifier.
+# This part is pretty straightforward, and there are many libraries that realize the training algorithms.
+
+spam_detector = MultinomialNB().fit(messages_tfidf, total_file_tweets['class'])
+all_predictions = spam_detector.predict(messages_tfidf)
+print all_predictions
+
+print 'accuracy', accuracy_score(total_file_tweets['class'], all_predictions)
+print 'confusion matrix\n', confusion_matrix(total_file_tweets['class'], all_predictions)
+print '(row=expected, col=predicted)'
 
 # # ################################################
 # total_file_tweets.hist(column='word_without_link',by='class',bins=25)
