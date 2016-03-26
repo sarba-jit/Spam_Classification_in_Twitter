@@ -1,0 +1,65 @@
+1. The following features were selected from the files:
+
+a. “Length Of Description In User Profile” : This feature gives numerical count of how much description is there in each profile. This basically gives us the idea how much a particular user is ready to disclose about himself. It can be safely assumed that a spammer would want less information to be provided. So, I have selected this as one of the feature.
+
+b. “Avg_follower_count” : We have the information regarding the daily number of
+following of each user. So this feature gives the average or mean count of the number of following for each user over the given time period. This is an important feature since the spammers are generally inclined to follow a huge number of users. Thus this feature would help us to understand the distribution, as legitimate users would generally have the mean on the lower side.
+
+c. “Var_follower_count” : This features gives us the variance of the number of following for each user over the given time period. We can predict safely that the spammers would be following a lot of users within a specific time period, thus the variance would be pretty large compared to a legitimate user. Thus this feature would be useful in the prediction.
+
+d. 'word_count_without_link' : This feature considers the tweets coming from the users. This feature gives us the count of words that come in the tweet other than the hyperlinks. A spammer's tweet generally consits of hyperlinks rather than general personal updates. Thus the word count seems to be an important feature. This feature would also be used while using the Bag-of-Words model.
+
+e. 'http_count' : This feature returns the number of hyperlinks in a tweet. Since as mentioned above spammers' tweets usually consits of hyperlinks, thus this feature might be helpful to our precition model.
+
+f. 'shortened_link' : This feature returns the number of shortened or malicious links present in the tweets. This is an important feature since spammers are generally inclined to post misleading links (e.g. affiliate links, links to malwate/clickjacking pages). Examples of malicious links may be urls ending in '.it', '.sx' or '.tv', etc.
+
+
+
+I have used 5 classification algorithms :
+a. Decision Tree
+b. SVM
+c. ADA Boost
+d. Logistic Regression
+e. Bag-of-Words
+
+The following metrices were used to analyse the prediction:
+Confusion Matrix, Precision, Recall, F1 Score, Accuracy.
+
+
+The list of features:
+
+a. “Length Of Description In User Profile”
+b. “Avg_follower_count”
+c. “Var_follower_count”
+d. 'word_count_without_link'
+e. 'http_count'
+f. 'shortened_link'
+
+
+
+Using the Bag-of-Words Approach
+
+In this section we take the raw tweets (sequence of characters) into vectors (sequences of numbers).
+The mapping is not 1-to-1; we'll use the bag-of-words approach, where each unique word in a text will be represented by one number. For that we would need the following feature:
+
+'word_stripped': this basically gives the list of words in the tweets other than any hyperlinks.
+
+we'll convert each tweet, represented as a list of tokens (lemmas) above, into a vector that machine learning models can understand.
+
+Doing that requires essentially three steps, in the bag-of-words model:
+1. counting how many times does a word occur in each tweet (term frequency) 
+2. weighting the counts, so that frequent tokens get lower weight (inverse document frequency) 
+3. normalizing the vectors to unit length, to abstract from the original text length (L2 norm) 
+Each vector has as many dimensions as there are unique words in the tweet corpus:
+
+
+
+3. We see that the BOW approach produced some good prediction but there are numerous ways to improve it. 
+a. There are quite a few possible metrics for evaluating model performance. Which one is the most suitable depends on the task. For example, the cost of mispredicting "spam" as "ham" is probably much lower than mispredicting "ham" as "spam".
+
+b. The prepocessing of data(specifically tweet data) before it goes into the prediction can be improved. Like filtering out stop words (pronouns etc); adding more features, such as an word-in-all-caps indicator and so on.
+
+
+We see when we apply our features to the tweet files, the accuracy is around 75 % for the classifiers. We would like to improve on that. We could find combine more features like, 'number of replies a user gives' or may be also include 'number of retweets a user has done'.
+
+Finally we may want to find a correlation between the date the account was created and the number of tweets, the tweet contents as well as the number of followings, and make it as a feature. It might be an important feature n improving the accuracy as when spammers create their account, the number of followings would be very high within a short period of time. So there should be a correlation. On the other hands , in that short time, the tweets would be more of retweets or hyperlinks. If we could build a model considering this features and correlation, the accuracy is likely to improve.
