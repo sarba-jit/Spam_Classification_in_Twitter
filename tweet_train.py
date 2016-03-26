@@ -320,7 +320,7 @@ print 'USING SUPPORT VECTOR MACHINE'
 predicted_labels = classifier_svm.predict(result_test)
 
 print("Confusion Matrix")
-print(confusion_matrix(ttotal_file_tweets_test['class'], predicted_labels))
+print(confusion_matrix(total_file_tweets_test['class'], predicted_labels))
 print("Precision")
 print(precision_score(total_file_tweets_test['class'], predicted_labels, average=None))
 print("Recall")
@@ -332,13 +332,14 @@ print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labe
 ##############################################################################################
 
 
+print 'USing BOW predictions'
 ###########################################################################################
 ###################################  USING BOW PREDICTION ###################################
 
-bow_transformer_test = CountVectorizer(analyzer=split_into_lemmas).fit(total_file_tweets_test['word_stripped'])
+bow_transformer_test= CountVectorizer(analyzer=split_into_lemmas).fit(total_file_tweets_test['word_stripped'])
 tweets_bow_test = bow_transformer_test.transform(total_file_tweets_test['word_stripped'])
 
-tfidf_transformer_test = TfidfTransformer().fit(tweets_bow_test)
+tfidf_transformer_test= TfidfTransformer().fit(tweets_bow_test)
 messages_tfidf_test = tfidf_transformer_test.transform(tweets_bow_test)
 
 ###############################################################################################
@@ -373,6 +374,7 @@ print("F1 score")
 print(f1_score(total_file_tweets_test['class'], predicted_labels, average=None))
 print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labels)
 
+
 ##############################################################################################
 
 print 'USING LOGISTIC REGRESSION'
@@ -389,14 +391,14 @@ print("F1 score")
 print(f1_score(total_file_tweets_test['class'], predicted_labels, average=None))
 print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labels)
 
-##############################################################################################
+#############################################################################################
 
 print 'USING SUPPORT VECTOR MACHINE'
 #################### USING SVM TO PREDICT ########################################
 predicted_labels = classifier_svm_bow.predict(messages_tfidf_test)
 
 print("Confusion Matrix")
-print(confusion_matrix(ttotal_file_tweets_test['class'], predicted_labels))
+print(confusion_matrix(total_file_tweets_test['class'], predicted_labels))
 print("Precision")
 print(precision_score(total_file_tweets_test['class'], predicted_labels, average=None))
 print("Recall")
