@@ -140,6 +140,10 @@ classifier_logistic.fit(result, total_file_profile['class'])
 
 ######################################################################
 
+######################################################################
+############## USING SVM TO TRAIN  ########################
+classifier_svm = SVC(cache_size=300,C=1.0,degree=2,gamma='auto',kernel='linear')
+classifier_svm.fit(result, total_file_profile['class'])
 
 ########################################################################################################################
 #########################################  TESTING  ####################################################################
@@ -206,7 +210,7 @@ result_combine_test = pandas.concat([df1_test,df2_test,df3_test],axis = 1)
 ################################################
 ##### USING CLASSIFIER TO TEST ################
 
-
+print 'USING DECISION TREE'
 #################### USING DECISION TREE TO PREDICT ########################################
 predicted_labels = classifier_tree.predict(result_combine_test)
 
@@ -222,6 +226,7 @@ print 'accuracy', accuracy_score(total_file_profile_test['class'], predicted_lab
 
 ##############################################################################################
 
+print 'USING ADA BOOST'
 #################### USING ADA BOOST TO PREDICT ########################################
 predicted_labels = classifier_ada.predict(result_combine_test)
 
@@ -237,8 +242,25 @@ print 'accuracy', accuracy_score(total_file_profile_test['class'], predicted_lab
 
 ##############################################################################################
 
+print 'USING LOGISTIC REGRESSION'
 #################### USING LOGISTIC REGRESSION TO PREDICT ########################################
 predicted_labels = classifier_logistic.predict(result_combine_test)
+
+print("Confusion Matrix")
+print(confusion_matrix(total_file_profile_test['class'], predicted_labels))
+print("Precision")
+print(precision_score(total_file_profile_test['class'], predicted_labels, average=None))
+print("Recall")
+print(recall_score(total_file_profile_test['class'], predicted_labels, average=None))
+print("F1 score")
+print(f1_score(total_file_profile_test['class'], predicted_labels, average=None))
+print 'accuracy', accuracy_score(total_file_profile_test['class'], predicted_labels)
+
+##############################################################################################
+
+print 'USING SUPPORT VECTOR MACHINE'
+#################### USING SVM TO PREDICT ########################################
+predicted_labels = classifier_svm.predict(result_combine_test)
 
 print("Confusion Matrix")
 print(confusion_matrix(total_file_profile_test['class'], predicted_labels))
