@@ -142,15 +142,15 @@ print messages_tfidf.shape
 # With messages represented as vectors, we can finally train our spam/ham classifier.
 # This part is pretty straightforward, and there are many libraries that realize the training algorithms.
 
-spam_detector = MultinomialNB().fit(messages_tfidf, total_file_tweets['class'])
+spam_detector_bow_NB = MultinomialNB().fit(messages_tfidf, total_file_tweets['class'])
 
-#################################### TESTING ON ITSELF ############################################
-all_predictions = spam_detector.predict(messages_tfidf)
-print all_predictions
-
-print 'accuracy', accuracy_score(total_file_tweets['class'], all_predictions)
-print 'confusion matrix\n', confusion_matrix(total_file_tweets['class'], all_predictions)
-print '(row=expected, col=predicted)'
+#################################### TESTING ON ITSELF  i.e on the training set############################################
+# all_predictions = spam_detector.predict(messages_tfidf)
+# print all_predictions
+#
+# print 'accuracy', accuracy_score(total_file_tweets['class'], all_predictions)
+# print 'confusion matrix\n', confusion_matrix(total_file_tweets['class'], all_predictions)
+# print '(row=expected, col=predicted)'
 
 # # ################################################
 # total_file_tweets.hist(column='word_without_link',by='class',bins=25)
@@ -180,12 +180,18 @@ result = pandas.concat([df1,df2,df3],axis = 1)
 classifier_tree = tree.DecisionTreeClassifier()
 classifier_tree.fit(result, total_file_tweets['class'])
 
+classifier_tree_bow = tree.DecisionTreeClassifier()
+classifier_tree_bow.fit(messages_tfidf, total_file_tweets['class'])
+
 ######################################################################
 
 ######################################################################
 ############## USING ADA BOOST TO TRAIN  ########################
 classifier_ada = AdaBoostClassifier(n_estimators=100)
 classifier_ada.fit(result, total_file_tweets['class'])
+
+classifier_ada_bow = AdaBoostClassifier(n_estimators=100)
+classifier_ada_bow.fit(messages_tfidf, total_file_tweets['class'])
 
 ######################################################################
 
@@ -194,6 +200,9 @@ classifier_ada.fit(result, total_file_tweets['class'])
 classifier_logistic = linear_model.LogisticRegression(C=1.0, penalty='l1', tol=1e-6)
 classifier_logistic.fit(result, total_file_tweets['class'])
 
+classifier_logistic_bow = linear_model.LogisticRegression(C=1.0, penalty='l1', tol=1e-6)
+classifier_logistic_bow.fit(messages_tfidf, total_file_tweets['class'])
+
 ######################################################################
 
 
@@ -201,6 +210,10 @@ classifier_logistic.fit(result, total_file_tweets['class'])
 ############## USING SVM TO TRAIN  ########################
 classifier_svm = SVC(cache_size=300,C=1.0,degree=2,gamma='auto',kernel='linear')
 classifier_svm.fit(result, total_file_tweets['class'])
+
+classifier_svm_bow = SVC(cache_size=300,C=1.0,degree=2,gamma='auto',kernel='linear')
+classifier_svm_bow.fit(messages_tfidf, total_file_tweets['class'])
+
 #################################################################
 
 
@@ -317,3 +330,77 @@ print(f1_score(total_file_tweets_test['class'], predicted_labels, average=None))
 print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labels)
 
 ##############################################################################################
+
+
+###########################################################################################
+###################################  USING BOW PREDICTION ###################################
+
+bow_transformer_test = CountVectorizer(analyzer=split_into_lemmas).fit(total_file_tweets_test['word_stripped'])
+tweets_bow_test = bow_transformer_test.transform(total_file_tweets_test['word_stripped'])
+
+tfidf_transformer_test = TfidfTransformer().fit(tweets_bow_test)
+messages_tfidf_test = tfidf_transformer_test.transform(tweets_bow_test)
+
+###############################################################################################
+
+print 'USING DECISION TREE'
+#################### USING DECISION TREE TO PREDICT ########################################
+predicted_labels = classifier_tree_bow.predict(messages_tfidf_test)
+
+print("Confusion Matrix")
+print(confusion_matrix(total_file_tweets_test['class'], predicted_labels))
+print("Precision")
+print(precision_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print("Recall")
+print(recall_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print("F1 score")
+print(f1_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labels)
+
+##############################################################################################
+
+print 'USING ADA BOOST'
+#################### USING ADA BOOST TO PREDICT ########################################
+predicted_labels = classifier_ada_bow.predict(messages_tfidf_test)
+
+print("Confusion Matrix")
+print(confusion_matrix(total_file_tweets_test['class'], predicted_labels))
+print("Precision")
+print(precision_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print("Recall")
+print(recall_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print("F1 score")
+print(f1_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labels)
+
+##############################################################################################
+
+print 'USING LOGISTIC REGRESSION'
+#################### USING LOGISTIC REGRESSION TO PREDICT ########################################
+predicted_labels = classifier_logistic_bow.predict(messages_tfidf_test)
+
+print("Confusion Matrix")
+print(confusion_matrix(total_file_tweets_test['class'], predicted_labels))
+print("Precision")
+print(precision_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print("Recall")
+print(recall_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print("F1 score")
+print(f1_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labels)
+
+##############################################################################################
+
+print 'USING SUPPORT VECTOR MACHINE'
+#################### USING SVM TO PREDICT ########################################
+predicted_labels = classifier_svm_bow.predict(messages_tfidf_test)
+
+print("Confusion Matrix")
+print(confusion_matrix(ttotal_file_tweets_test['class'], predicted_labels))
+print("Precision")
+print(precision_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print("Recall")
+print(recall_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print("F1 score")
+print(f1_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labels)
