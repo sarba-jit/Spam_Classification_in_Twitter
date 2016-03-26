@@ -143,6 +143,8 @@ print messages_tfidf.shape
 # This part is pretty straightforward, and there are many libraries that realize the training algorithms.
 
 spam_detector = MultinomialNB().fit(messages_tfidf, total_file_tweets['class'])
+
+#################################### TESTING ON ITSELF ############################################
 all_predictions = spam_detector.predict(messages_tfidf)
 print all_predictions
 
@@ -195,6 +197,14 @@ classifier_logistic.fit(result, total_file_tweets['class'])
 ######################################################################
 
 
+######################################################################
+############## USING SVM TO TRAIN  ########################
+classifier_svm = SVC(cache_size=300,C=1.0,degree=2,gamma='auto',kernel='linear')
+classifier_svm.fit(result, total_file_tweets['class'])
+#################################################################
+
+
+
 ###########################################################################################################################
 ########################################### TESTING    #################################################################
 
@@ -213,10 +223,10 @@ spam_text_profile_test['class'] = 1
 
 result1_test = [ham_text_profile_test,spam_text_profile_test]
 total_file_tweets_test = pandas.concat(result1_test)
-#################################################################################################
+###############################################################################################
 
 ################################################################################
-##ADDIDITONAL COLUMNS FOR FEATURE EXTRACTION
+## ADDIDITONAL COLUMNS FOR FEATURE EXTRACTION
 
 total_file_tweets_test['length'] = total_file_tweets_test['Tweet'].map(lambda text: len(text))
 total_file_tweets_test['http_count'] = total_file_tweets_test.Tweet.apply(link_count)
@@ -242,7 +252,9 @@ df3_test = pandas.DataFrame(S3_test)
 
 result_test = pandas.concat([df1_test,df2_test,df3_test],axis = 1)
 
+###############################################################################################
 
+print 'USING DECISION TREE'
 #################### USING DECISION TREE TO PREDICT ########################################
 predicted_labels = classifier_tree.predict(result_test)
 
@@ -258,6 +270,7 @@ print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labe
 
 ##############################################################################################
 
+print 'USING ADA BOOST'
 #################### USING ADA BOOST TO PREDICT ########################################
 predicted_labels = classifier_ada.predict(result_test)
 
@@ -273,11 +286,28 @@ print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labe
 
 ##############################################################################################
 
+print 'USING LOGISTIC REGRESSION'
 #################### USING LOGISTIC REGRESSION TO PREDICT ########################################
 predicted_labels = classifier_logistic.predict(result_test)
 
 print("Confusion Matrix")
 print(confusion_matrix(total_file_tweets_test['class'], predicted_labels))
+print("Precision")
+print(precision_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print("Recall")
+print(recall_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print("F1 score")
+print(f1_score(total_file_tweets_test['class'], predicted_labels, average=None))
+print 'accuracy', accuracy_score(total_file_tweets_test['class'], predicted_labels)
+
+##############################################################################################
+
+print 'USING SUPPORT VECTOR MACHINE'
+#################### USING SVM TO PREDICT ########################################
+predicted_labels = classifier_svm.predict(result_test)
+
+print("Confusion Matrix")
+print(confusion_matrix(ttotal_file_tweets_test['class'], predicted_labels))
 print("Precision")
 print(precision_score(total_file_tweets_test['class'], predicted_labels, average=None))
 print("Recall")
